@@ -130,17 +130,48 @@ if (!empty($_POST["custom_submit"]) ) {
 
 
 
+////////////// 	make a shortcode to display db data on post//////////////
+
+function bbcodeplugin_db($attr, $content=null)
+{
+    if( empty( $content ) )
+    {
+        return '';
+    }
+ 
+    return '<strong>' . db_display(). do_shortcode($content) .'</strong>';
+}
+
+function register_shortcode()
+{
+	add_shortcode('db-table', 'bbcodeplugin_db');
+}
+
+add_action('init' , 'register_shortcode');
 
 
 
-
-
-
-
+function db_display()
+{
+			global $wpdb;
+			$mtwpvalu = $wpdb->get_results( "SELECT text_name,main FROM new_table" ); 
+			//$my_table_name = $wpdb->prefix . 'new_table';
+			if(!empty($mtwpvalu))
+			{
+				foreach($mtwpvalu as $r) {	 
+					  echo "<p>".$r->text_name. "</ br>" .$r->main."</p>"; 
+				 }
+			} else {
+				 echo "<p>Boo, we couldn't find anything that is in all these groups. Try removing a category!</p>";	 	 
+					} 
+}
 
 
 
 ///////////////////////////
+
+
+
 add_action('admin_menu', 'wp_myCustomPlugin_add_pages');
 register_activation_hook( __FILE__, 'wp_myCustomPlugin_DB' );
 ?>
